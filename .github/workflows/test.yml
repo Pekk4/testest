@@ -17,9 +17,10 @@ jobs:
       - name: Check if commit is tagged
         id: tag_check
         run: |
+          set -e
           git fetch --tags
           TAG=$(git tag --points-at HEAD)
-          echo "Tag found: $TAG"
+          echo "::notice::Tag found: $TAG"
           if [ -z "$TAG" ]; then
             echo "tagged=false" >> $GITHUB_OUTPUT
           else
