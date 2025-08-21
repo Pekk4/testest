@@ -1,0 +1,40 @@
+name: Build Backend Container
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  check-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tagged: ${{ steps.tag_check.outputs.tagged }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if commit is tagged
+        id: tag_check
+        run: |
+          git fetch --tags
+          TAG=$(git tag --points-at HEAD)
+          echo "Tag found: $TAG"
+          if [ -z "$TAG" ]; then
+            echo "tagged=false" >> $GITHUB_OUTPUT
+          else
+            echo "tagged=true" >> $GITHUB_OUTPUT
+        shell: bash
+
+  build-backend:
+    needs: check-tag
+    if: needs.check-tag.outputs.tagged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build backend container
+        run: |
+          echo "Building backend container..."
+          # Add your Docker build/push logic here
